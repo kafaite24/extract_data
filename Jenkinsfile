@@ -4,8 +4,8 @@ pipeline {
     agent any
     stages {
        
-		stage('Create tabless'){
-			 steps{
+		stage('Create tables'){
+			steps{
                 script{
 				
 					sqlconnection().execute'''
@@ -18,12 +18,7 @@ pipeline {
 
 					sqlconnection().execute'''
 						CREATE TABLE KH255051.jobs (
-							job_id INT NOT NULL GENERATED ALWAYS AS IDENTITY
-							(START WITH 1 
-							INCREMENT BY 1 
-							MINVALUE 1 
-							MAXVALUE 2147483645 
-							NO CYCLE) PRIMARY KEY,
+							job_id INT NOT NULL PRIMARY KEY,
 							job_title VARCHAR (35) NOT NULL,
 							min_salary DECIMAL (8, 2) DEFAULT NULL,
 							max_salary DECIMAL (8, 2) DEFAULT NULL);
