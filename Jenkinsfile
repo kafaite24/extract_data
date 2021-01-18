@@ -170,32 +170,32 @@ pipeline {
                 script{
 				
 					sqlconnection().execute '''
-						ALTER TABLE employees_staging 
+						ALTER TABLE employees_landing
 						ADD DateAdded Date;
 					'''
 					
 					sqlconnection().execute '''
-						ALTER TABLE departments_staging 
+						ALTER TABLE departments_landing
 						ADD DateAdded Date;
 					'''
 					
 					sqlconnection().execute '''
-						ALTER TABLE jobs_staging 
+						ALTER TABLE jobs_landing 
 						ADD DateAdded Date;
 					'''
 					
 					sqlconnection().execute '''
-						update employees_staging
+						update employees_landing
 						set DateAdded= current_date
 					'''
 
 					sqlconnection().execute '''
-						update departments_staging
+						update departments_landing
 						set DateAdded= current_date
 					'''
 					
 					sqlconnection().execute '''
-						update jobs_staging
+						update jobs_landing
 						set DateAdded= current_date
 					'''
 					
