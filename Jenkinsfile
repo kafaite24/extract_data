@@ -9,35 +9,35 @@ pipeline {
 			steps{
                 script{
 					
-					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'staff' and databasename='KH255051'") { row ->
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_landing' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 				
 					if("${table}"=="1"){
 						sqlconnection().execute'''
-							drop table staff
+							drop table employees_landing
 						'''
 					}}
 					
-					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments' and databasename='KH255051'") { row ->
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments_landing' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
 					if("${table}"=="1"){
 						sqlconnection().execute'''
-							drop table departments
+							drop table departments_landing
 						'''
 					}}
 					
-					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'jobs' and databasename='KH255051'") { row ->
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'jobs_landing' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
 					if("${table}"=="1"){
 						sqlconnection().execute'''
-							drop table jobs
+							drop table jobs_landing
 						'''
 					}}
 					
 					sqlconnection().execute'''
-						CREATE TABLE KH255051.departments (
+						CREATE TABLE KH255051.departments_landing (
 							department_id INT NOT NULL PRIMARY KEY,
 							department_name VARCHAR (30) NOT NULL,
 							location VARCHAR (100) DEFAULT NULL);
@@ -45,7 +45,7 @@ pipeline {
 					
 
 					sqlconnection().execute'''
-						CREATE TABLE KH255051.jobs (
+						CREATE TABLE KH255051.jobs_landing (
 							job_id INT NOT NULL PRIMARY KEY,
 							job_title VARCHAR (35) NOT NULL,
 							min_salary DECIMAL (8, 2) DEFAULT NULL,
@@ -54,7 +54,7 @@ pipeline {
 					
 					
 					sqlconnection().execute'''
-						CREATE TABLE KH255051.staff (
+						CREATE TABLE KH255051.employees_landing (
 							employee_id INT NOT NULL PRIMARY KEY,
 							name_prefix VARCHAR (20) DEFAULT NULL,
 							first_name VARCHAR (20) DEFAULT NULL,
@@ -92,14 +92,14 @@ pipeline {
 					}
 				}
 		}
-		stage('load data in departments table'){
+		stage('load data in landing departments table'){
             steps{
                 script{
 					
 					
 					String csvFilePath = "${departments_csv_file_path}"
 						
-					String insert = "insert into departments values(?,?,?)";
+					String insert = "insert into departments_landing values(?,?,?)";
 			
 					BufferedReader lineReader = new BufferedReader(new FileReader(csvFilePath));
 						
@@ -116,14 +116,14 @@ pipeline {
 
 				}
 			}}
-		stage('load data in jobs table'){
+		stage('load data in landing jobs table'){
             steps{
                 script{
 					
 					
 					String csvFilePath = "${jobs_csv_file_path}"
 						
-					String insert = "insert into jobs values(?,?,?,?)";
+					String insert = "insert into jobs_landing values(?,?,?,?)";
 			
 					BufferedReader lineReader = new BufferedReader(new FileReader(csvFilePath));
 						
@@ -140,14 +140,14 @@ pipeline {
 
 				}
 			}}
-		stage('load data in staff table'){
+		stage('load data in landing employees table'){
             steps{
                 script{
 					
 					
 					String csvFilePath = "${staff_csv_file_path}"
 						
-					String insert = "insert into staff values( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					String insert = "insert into employees_landing values( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			
 					BufferedReader lineReader = new BufferedReader(new FileReader(csvFilePath));
 						
@@ -164,6 +164,95 @@ pipeline {
 
 				}
 			}}
+			
+		stage('load data in staging tables'){
+            steps{
+                script{
+				
+					sqlconnection().execute '''
+						ALTER TABLE employees_staging 
+						ADD DateAdded Date;
+					'''
+					
+					sqlconnection().execute '''
+						ALTER TABLE departments_staging 
+						ADD DateAdded Date;
+					'''
+					
+					sqlconnection().execute '''
+						ALTER TABLE jobs_staging 
+						ADD DateAdded Date;
+					'''
+					
+					sqlconnection().execute '''
+						update employees_staging
+						set DateAdded= current_date
+					'''
+
+					sqlconnection().execute '''
+						update departments_staging
+						set DateAdded= current_date
+					'''
+					
+					sqlconnection().execute '''
+						update jobs_staging
+						set DateAdded= current_date
+					'''
+					
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+			
+					if("${table}"=="0"){
+						sqlconnection().execute'''
+							CREATE TABLE employees_staging AS
+							(select * from employees_landing)
+							with data;
+						'''
+					}
+					else{
+						connection().execute'''
+							insert into employees_staging
+							select * from employees_landing
+						'''
+					}}
+					
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+			
+					if("${table}"=="0"){
+						sqlconnection().execute'''
+							CREATE TABLE departments_staging AS
+							(select * from departments_landing)
+							with data;
+						'''
+					}
+					else{
+						connection().execute'''
+							insert into departments_staging
+							select * from departments_landing
+						'''
+					}
+					}
+					
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+			
+					if("${table}"=="0"){
+						sqlconnection().execute'''
+							CREATE TABLE jobs_staging AS
+							(select * from jobs_landing)
+							with data;
+						'''
+					}
+					else{
+						connection().execute'''
+							insert into jobs_staging
+							select * from jobs_landing
+						'''
+					}}	
+				}
+			}}
+
 		}
 	
 }
