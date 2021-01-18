@@ -216,7 +216,7 @@ pipeline {
 						'''
 					}}
 					
-					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
 					if("${table}"=="0"){
@@ -234,7 +234,7 @@ pipeline {
 					}
 					}
 					
-					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'jobs_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
 					if("${table}"=="0"){
