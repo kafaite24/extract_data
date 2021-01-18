@@ -3,7 +3,39 @@ import groovy.sql.Sql
 pipeline {
     agent any
     stages {
-       
+       		
+		
+		stage('drop tables if exist'){
+			steps{
+                script{
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'staff' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+				
+					if("${table}"=="1"){
+						sqlconnection().execute'''
+							drop table staff
+						'''
+					}
+					
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+			
+					if("${table}"=="1"){
+						sqlconnection().execute'''
+							drop table departments
+						'''
+					}
+					
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'jobs' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+			
+					if("${table}"=="1"){
+						sqlconnection().execute'''
+							drop table jobs
+						'''
+					}
+				}			
+			}}}
 		stage('Create tables'){
 			steps{
                 script{
