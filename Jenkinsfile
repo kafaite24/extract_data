@@ -210,7 +210,7 @@ pipeline {
 						'''
 					}
 					else{
-						connection().execute'''
+						sqlconnection().execute'''
 							insert into employees_staging
 							select * from employees_landing
 						'''
@@ -227,7 +227,7 @@ pipeline {
 						'''
 					}
 					else{
-						connection().execute'''
+						sqlconnection().execute'''
 							insert into departments_staging
 							select * from departments_landing
 						'''
