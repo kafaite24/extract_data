@@ -245,7 +245,7 @@ pipeline {
 						'''
 					}
 					else{
-						connection().execute'''
+						sqlconnection().execute'''
 							insert into jobs_staging
 							select * from jobs_landing
 						'''
