@@ -187,17 +187,17 @@ pipeline {
 				
 					sqlconnection().execute '''
 						ALTER TABLE employees_landing
-						ADD DateAdded TIMESTAMP(0);
+						ADD DateAdded TIMESTAMP;
 					'''
 					
 					sqlconnection().execute '''
 						ALTER TABLE departments_landing
-						ADD DateAdded TIMESTAMP(0);
+						ADD DateAdded TIMESTAMP;
 					'''
 					
 					sqlconnection().execute '''
 						ALTER TABLE jobs_landing 
-						ADD DateAdded TIMESTAMP(0);
+						ADD DateAdded TIMESTAMP;
 					'''
 					
 					sqlconnection().execute '''
