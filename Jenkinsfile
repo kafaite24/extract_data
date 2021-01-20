@@ -187,32 +187,32 @@ pipeline {
 				
 					sqlconnection().execute '''
 						ALTER TABLE employees_landing
-						ADD DateAdded Date;
+						ADD DateAdded TIMESTAMP(0);
 					'''
 					
 					sqlconnection().execute '''
 						ALTER TABLE departments_landing
-						ADD DateAdded Date;
+						ADD DateAdded TIMESTAMP(0);
 					'''
 					
 					sqlconnection().execute '''
 						ALTER TABLE jobs_landing 
-						ADD DateAdded Date;
+						ADD DateAdded TIMESTAMP(0);
 					'''
 					
 					sqlconnection().execute '''
 						update employees_landing
-						set DateAdded= current_date
+						set DateAdded= current_timestamp
 					'''
 
 					sqlconnection().execute '''
 						update departments_landing
-						set DateAdded= current_date
+						set DateAdded= current_timestamp
 					'''
 					
 					sqlconnection().execute '''
 						update jobs_landing
-						set DateAdded= current_date
+						set DateAdded= current_timestamp
 					'''
 					
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
