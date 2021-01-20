@@ -211,7 +211,7 @@ pipeline {
 						sqlconnection().execute'''
 							CREATE Multiset TABLE employees_staging AS
 							(select * from employees_landing)
-							with data;
+							with no data;
 						'''
 					}
 
@@ -229,7 +229,7 @@ pipeline {
 						sqlconnection().execute'''
 							CREATE Multiset TABLE departments_staging AS
 							(select * from departments_landing)
-							with data;
+							with no data;
 						'''
 					}
 					
@@ -249,7 +249,7 @@ pipeline {
 						sqlconnection().execute'''
 							CREATE Multiset TABLE jobs_staging AS
 							(select * from jobs_landing)
-							with data;
+							with no data;
 						'''
 					}
 
