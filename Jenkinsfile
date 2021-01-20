@@ -20,7 +20,7 @@ pipeline {
 						'''
 						sqlconnection().execute'''
 							Alter table departments_landing
-							drop column DateAdded
+							drop DateAdded
 						'''
 					}
 					else{
@@ -42,7 +42,7 @@ pipeline {
 						'''
 						sqlconnection().execute'''
 							Alter table departments_landing
-							drop column DateAdded
+							drop DateAdded
 						'''
 					}
 					else{
@@ -64,7 +64,7 @@ pipeline {
 						'''
 						sqlconnection().execute'''
 							Alter table departments_landing
-							drop column DateAdded
+							drop DateAdded
 						'''
 					}
 					else{
