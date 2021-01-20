@@ -9,87 +9,91 @@ pipeline {
 			steps{
                 script{
 					
-					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_landing' and databasename='KH255051'") { row ->
-					def table= "$row.output"
-				
-					if("${table}"=="1"){
-						sqlconnection().execute'''
-							drop table employees_landing
-						'''
-					}}
+					
 					
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments_landing' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
 					if("${table}"=="1"){
 						sqlconnection().execute'''
-							drop table departments_landing
+							delete from departments_landing
 						'''
-					}}
+					}
+					else{
+						sqlconnection().execute'''
+							CREATE Multiset TABLE KH255051.departments_landing (
+								department_id INT NOT NULL PRIMARY KEY,
+								department_name VARCHAR (30) NOT NULL,
+								location VARCHAR (100) DEFAULT NULL);
+							'''
+					}
+					}
 					
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'jobs_landing' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
 					if("${table}"=="1"){
 						sqlconnection().execute'''
-							drop table jobs_landing
+							delete from jobs_landing
 						'''
-					}}
-					
-					sqlconnection().execute'''
-						CREATE TABLE KH255051.departments_landing (
-							department_id INT NOT NULL PRIMARY KEY,
-							department_name VARCHAR (30) NOT NULL,
-							location VARCHAR (100) DEFAULT NULL);
-						'''
-					
-
-					sqlconnection().execute'''
-						CREATE TABLE KH255051.jobs_landing (
-							job_id INT NOT NULL PRIMARY KEY,
-							job_title VARCHAR (35) NOT NULL,
-							min_salary DECIMAL (8, 2) DEFAULT NULL,
-							max_salary DECIMAL (8, 2) DEFAULT NULL);
-						'''
-					
-					
-					sqlconnection().execute'''
-						CREATE TABLE KH255051.employees_landing (
-							employee_id INT NOT NULL PRIMARY KEY,
-							name_prefix VARCHAR (20) DEFAULT NULL,
-							first_name VARCHAR (20) DEFAULT NULL,
-							middle_initial VARCHAR (20) DEFAULT NULL,
-							last_name VARCHAR (25) NOT NULL,
-							gender VARCHAR (20) DEFAULT NULL,
-							email VARCHAR (100) NOT NULL,
-							father_name VARCHAR (100) DEFAULT NULL,
-							mother_name VARCHAR (100) DEFAULT NULL,
-							mother_maiden_name VARCHAR (100) DEFAULT NULL,
-							dob DATE DEFAULT NULL,
-							age DECIMAL (8, 2) DEFAULT NULL,
-							weight DECIMAL (8, 2) DEFAULT NULL,
-							hire_date DATE NOT NULL,
-							half_of_joining VARCHAR (20) DEFAULT NULL,
-							year_of_joining int DEFAULT NULL,
-							month_of_joining int DEFAULT NULL,
-							month_name_joining VARCHAR (20) DEFAULT NULL,
-							age_in_company DECIMAL (8, 2) DEFAULT NULL,
-							salary DECIMAL (8, 2) DEFAULT NULL,
-							SSN VARCHAR (20) DEFAULT NULL,
-							phone_number VARCHAR (20) DEFAULT NULL,
-							country VARCHAR (20) DEFAULT NULL,
-							city VARCHAR (20) DEFAULT NULL,
-							state VARCHAR (20) DEFAULT NULL,
-							region VARCHAR (20) DEFAULT NULL,
-							zip_code INT DEFAULT NULL,
-							username VARCHAR (100) DEFAULT NULL,
-							passcode VARCHAR (100) DEFAULT NULL,
-							job_id INT NOT NULL,
-							manager_id INT DEFAULT NULL,
-							department_id INT DEFAULT NULL);
-						'''
-				
 					}
+					else{
+						sqlconnection().execute'''
+							CREATE Multiset TABLE KH255051.jobs_landing (
+								job_id INT NOT NULL PRIMARY KEY,
+								job_title VARCHAR (35) NOT NULL,
+								min_salary DECIMAL (8, 2) DEFAULT NULL,
+								max_salary DECIMAL (8, 2) DEFAULT NULL);
+							'''}
+					}
+					
+					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_landing' and databasename='KH255051'") { row ->
+					def table= "$row.output"
+				
+					if("${table}"=="1"){
+						sqlconnection().execute'''
+							delete from employees_landing
+						'''
+					}
+					else{
+						sqlconnection().execute'''
+							CREATE Multiset TABLE KH255051.employees_landing (
+								employee_id INT NOT NULL PRIMARY KEY,
+								name_prefix VARCHAR (20) DEFAULT NULL,
+								first_name VARCHAR (20) DEFAULT NULL,
+								middle_initial VARCHAR (20) DEFAULT NULL,
+								last_name VARCHAR (25) NOT NULL,
+								gender VARCHAR (20) DEFAULT NULL,
+								email VARCHAR (100) NOT NULL,
+								father_name VARCHAR (100) DEFAULT NULL,
+								mother_name VARCHAR (100) DEFAULT NULL,
+								mother_maiden_name VARCHAR (100) DEFAULT NULL,
+								dob DATE DEFAULT NULL,
+								age DECIMAL (8, 2) DEFAULT NULL,
+								weight DECIMAL (8, 2) DEFAULT NULL,
+								hire_date DATE NOT NULL,
+								half_of_joining VARCHAR (20) DEFAULT NULL,
+								year_of_joining int DEFAULT NULL,
+								month_of_joining int DEFAULT NULL,
+								month_name_joining VARCHAR (20) DEFAULT NULL,
+								age_in_company DECIMAL (8, 2) DEFAULT NULL,
+								salary DECIMAL (8, 2) DEFAULT NULL,
+								SSN VARCHAR (20) DEFAULT NULL,
+								phone_number VARCHAR (20) DEFAULT NULL,
+								country VARCHAR (20) DEFAULT NULL,
+								city VARCHAR (20) DEFAULT NULL,
+								state VARCHAR (20) DEFAULT NULL,
+								region VARCHAR (20) DEFAULT NULL,
+								zip_code INT DEFAULT NULL,
+								username VARCHAR (100) DEFAULT NULL,
+								passcode VARCHAR (100) DEFAULT NULL,
+								job_id INT NOT NULL,
+								manager_id INT DEFAULT NULL,
+								department_id INT DEFAULT NULL);
+							'''
+					}
+					
+					}}
 				}
 		}
 		stage('load data in landing departments table'){
@@ -202,21 +206,15 @@ pipeline {
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
-					if("${table}"=="1"){
+					if("${table}"=="0"){
 						
 						sqlconnection().execute'''
-							drop table employees_staging;
+							CREATE Multiset TABLE employees_staging AS
+							(select * from employees_landing)
+							with data;
 						'''
 					}
-					
-					
-					sqlconnection().execute'''
-						CREATE TABLE employees_staging AS
-						(select * from employees_landing)
-						with data;
-					'''
-				
-					
+
 					sqlconnection().execute'''
 						insert into employees_staging
 						select * from employees_landing
@@ -226,18 +224,15 @@ pipeline {
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
-					if("${table}"=="1"){
+					if("${table}"=="0"){
 						
 						sqlconnection().execute'''
-							drop table departments_staging;
+							CREATE Multiset TABLE departments_staging AS
+							(select * from departments_landing)
+							with data;
 						'''
 					}
-					sqlconnection().execute'''
-						CREATE TABLE departments_staging AS
-						(select * from departments_landing)
-						with data;
-					'''
-						
+					
 					sqlconnection().execute'''
 						insert into departments_staging
 						select * from departments_landing
@@ -249,19 +244,15 @@ pipeline {
 					def table= "$row.output"
 			
 					
-					if("${table}"=="1"){
+					if("${table}"=="0"){
 						
 						sqlconnection().execute'''
-							drop table jobs_staging;
+							CREATE Multiset TABLE jobs_staging AS
+							(select * from jobs_landing)
+							with data;
 						'''
 					}
-					
-					sqlconnection().execute'''
-						CREATE TABLE jobs_staging AS
-						(select * from jobs_landing)
-						with data;
-					'''
-			
+
 					sqlconnection().execute'''
 						insert into jobs_staging
 						select * from jobs_landing
