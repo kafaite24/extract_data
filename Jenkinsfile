@@ -202,54 +202,71 @@ pipeline {
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'employees_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
-					if("${table}"=="0"){
+					if("${table}"=="1"){
+						
 						sqlconnection().execute'''
-							CREATE TABLE employees_staging AS
-							(select * from employees_landing)
-							with data;
+							drop table employees_staging;
 						'''
 					}
-					else{
-						sqlconnection().execute'''
-							insert into employees_staging
-							select * from employees_landing
-						'''
-					}}
+					
+					
+					sqlconnection().execute'''
+						CREATE TABLE employees_staging AS
+						(select * from employees_landing)
+						with data;
+					'''
+				
+					
+					sqlconnection().execute'''
+						insert into employees_staging
+						select * from employees_landing
+					'''
+					}
 					
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'departments_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
-					if("${table}"=="0"){
+					if("${table}"=="1"){
+						
 						sqlconnection().execute'''
-							CREATE TABLE departments_staging AS
-							(select * from departments_landing)
-							with data;
+							drop table departments_staging;
 						'''
 					}
-					else{
-						sqlconnection().execute'''
-							insert into departments_staging
-							select * from departments_landing
-						'''
-					}
+					sqlconnection().execute'''
+						CREATE TABLE departments_staging AS
+						(select * from departments_landing)
+						with data;
+					'''
+						
+					sqlconnection().execute'''
+						insert into departments_staging
+						select * from departments_landing
+					'''
+					
 					}
 					
 					sqlconnection().eachRow("SELECT COUNT(*) as output FROM dbc.TABLES WHERE TABLENAME = 'jobs_staging' and databasename='KH255051'") { row ->
 					def table= "$row.output"
 			
-					if("${table}"=="0"){
+					
+					if("${table}"=="1"){
+						
 						sqlconnection().execute'''
-							CREATE TABLE jobs_staging AS
-							(select * from jobs_landing)
-							with data;
+							drop table jobs_staging;
 						'''
 					}
-					else{
-						sqlconnection().execute'''
-							insert into jobs_staging
-							select * from jobs_landing
-						'''
-					}}	
+					
+					sqlconnection().execute'''
+						CREATE TABLE jobs_staging AS
+						(select * from jobs_landing)
+						with data;
+					'''
+			
+					sqlconnection().execute'''
+						insert into jobs_staging
+						select * from jobs_landing
+					'''
+					}	
 				}
 			}}
 
