@@ -41,7 +41,7 @@ pipeline {
 							delete from jobs_landing
 						'''
 						sqlconnection().execute'''
-							Alter table departments_landing
+							Alter table jobs_landing
 							drop DateAdded
 						'''
 					}
@@ -63,7 +63,7 @@ pipeline {
 							delete from employees_landing
 						'''
 						sqlconnection().execute'''
-							Alter table departments_landing
+							Alter table employees_landing
 							drop DateAdded
 						'''
 					}
