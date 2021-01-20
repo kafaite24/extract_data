@@ -18,6 +18,10 @@ pipeline {
 						sqlconnection().execute'''
 							delete from departments_landing
 						'''
+						sqlconnection().execute'''
+							Alter table departments_landing
+							drop column DateAdded
+						'''
 					}
 					else{
 						sqlconnection().execute'''
@@ -36,6 +40,10 @@ pipeline {
 						sqlconnection().execute'''
 							delete from jobs_landing
 						'''
+						sqlconnection().execute'''
+							Alter table departments_landing
+							drop column DateAdded
+						'''
 					}
 					else{
 						sqlconnection().execute'''
@@ -53,6 +61,10 @@ pipeline {
 					if("${table}"=="1"){
 						sqlconnection().execute'''
 							delete from employees_landing
+						'''
+						sqlconnection().execute'''
+							Alter table departments_landing
+							drop column DateAdded
 						'''
 					}
 					else{
